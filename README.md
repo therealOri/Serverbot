@@ -35,6 +35,7 @@ __ __
   - [] Fix button states when switching back to main panel menu. (keep track of button states) - Priority
   - [] Migrate/Rewrite bot to `Pycord` instead of using `discord.py`.
   - [] Somehow make discord and minecraft chat sync to add cross communication.
+  - [] Figure out how to handle the server being paused so it doesn't break the buttons interaction.
 __ __
 
 <br>

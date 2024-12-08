@@ -821,6 +821,7 @@ class User_Management_Menu(discord.ui.View):
     async def prev_menu(self, interaction: discord.Interaction, button: discord.ui.Button):
         timeout=None
         view = Main_Menu(timeout=timeout)
+        view.preserve_button_states()
         await interaction.response.edit_message(view=view)
 
 
@@ -834,18 +835,34 @@ class Main_Menu(discord.ui.View):
 
 
     offline_msg="Server is Offline and can't run this command."
+    button_states = {
+        'Start': {
+            'style': discord.ButtonStyle.green,
+            'disabled': False
+        },
+        'Stop': {
+            'style': discord.ButtonStyle.red,
+            'disabled': True
+        }
+    }
+    def preserve_button_states(self):
+        for item in self.children:
+            if item.label in self.button_states:
+                state = self.button_states[item.label]
+                item.style = state['style']
+                item.disabled = state['disabled']
+
     @discord.ui.button(label='Start', style=discord.ButtonStyle.green, emoji="▶️")
     async def start_server(self, interaction: discord.Interaction, button: discord.ui.Button):
         global subprocess_handle
         if subprocess_handle:
             await interaction.response.send_message('Server is already Online.', ephemeral=True, delete_after=10)
         else:
-            button.style = discord.ButtonStyle.gray
-            button.disabled = True
-            for item in self.children:
-                if item.label == 'Stop':
-                    item.disabled = False
-                    break
+            self.button_states['Start']['style'] = discord.ButtonStyle.gray
+            self.button_states['Start']['disabled'] = True
+            self.button_states['Stop']['disabled'] = False
+
+            self.preserve_button_states()
             await interaction.message.edit(view=self)
             await start(interaction)
 
@@ -854,12 +871,11 @@ class Main_Menu(discord.ui.View):
     async def stop_server(self, interaction: discord.Interaction, button: discord.ui.Button):
         global subprocess_handle
         if subprocess_handle:
-            for item in self.children:
-                if item.label == 'Start':
-                    item.style = discord.ButtonStyle.green
-                    item.disabled = False
-                    break
-            button.disabled = True
+            self.button_states['Start']['style'] = discord.ButtonStyle.green
+            self.button_states['Start']['disabled'] = False
+            self.button_states['Stop']['disabled'] = True
+
+            self.preserve_button_states()
             await interaction.message.edit(view=self)
             await stop(interaction)
         else:

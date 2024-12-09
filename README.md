@@ -18,7 +18,6 @@ __ __
 - Added a `/mc_menu` command for accessing the control pannel.
 - Added a `Backup` button for making backups manually.
 __ __
-> Note: When `pause-when-empty-seconds` is enabled in the `server.properties` file, the interaction can/will fail after xyz seconds and become unresponsive. (And idk why)
 
 <br>
 <br>
@@ -35,7 +34,6 @@ __ __
   - [x] Fix button states when switching back to main panel menu. (keep track of button states)
   - [] Migrate/Rewrite bot to `Pycord` instead of using `discord.py`.
   - [] Somehow make discord and minecraft chat sync to add cross communication.
-  - [] Figure out how to handle the server being paused so it doesn't break the buttons interaction.
 __ __
 
 <br>

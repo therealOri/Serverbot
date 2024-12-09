@@ -272,13 +272,14 @@ async def scheduled_restarts(log_channel):
 
 
 #Exiting Main Menu
-async def exit(interaction):
+async def exit(self, interaction):
     global subprocess_handle
     if subprocess_handle:
         await interaction.response.send_message("⚠️ Warning: Please shut down the server first!", ephemeral=True, delete_after=10)
     else:
         await interaction.response.send_message("Goodbye!", ephemeral=True, delete_after=10)
         await interaction.message.delete()
+        self.stop()
 
 
 
@@ -669,8 +670,6 @@ async def say(interaction: discord.Interaction, msg: str):
 
 
 
-
-
 # Modals
 class mc_wlAdd(discord.ui.Modal, title='Minecraft User Whitelist.'):
     code = discord.ui.TextInput(
@@ -821,7 +820,7 @@ class User_Management_Menu(discord.ui.View):
     async def prev_menu(self, interaction: discord.Interaction, button: discord.ui.Button):
         timeout=None
         view = Main_Menu(timeout=timeout)
-        view.preserve_button_states()
+        view.edit_button_states()
         await interaction.response.edit_message(view=view)
 
 
@@ -845,7 +844,7 @@ class Main_Menu(discord.ui.View):
             'disabled': True
         }
     }
-    def preserve_button_states(self):
+    def edit_button_states(self):
         for item in self.children:
             if item.label in self.button_states:
                 state = self.button_states[item.label]
@@ -862,7 +861,7 @@ class Main_Menu(discord.ui.View):
             self.button_states['Start']['disabled'] = True
             self.button_states['Stop']['disabled'] = False
 
-            self.preserve_button_states()
+            self.edit_button_states()
             await interaction.message.edit(view=self)
             await start(interaction)
 
@@ -875,7 +874,7 @@ class Main_Menu(discord.ui.View):
             self.button_states['Start']['disabled'] = False
             self.button_states['Stop']['disabled'] = True
 
-            self.preserve_button_states()
+            self.edit_button_states()
             await interaction.message.edit(view=self)
             await stop(interaction)
         else:
@@ -926,8 +925,7 @@ class Main_Menu(discord.ui.View):
 
     @discord.ui.button(label='Exit', style=discord.ButtonStyle.red, emoji="🚪")
     async def exit_menu(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await exit(interaction)
-        self.stop()
+        await exit(self, interaction)
 
 
 
